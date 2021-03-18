@@ -6,6 +6,11 @@ function login($tel, $pass) {
 
 	include 'connection.php';
 
+	if (mysqli_connect_errno()) {
+		res_err('Connect failed: '.mysqli_connect_error());
+		exit();
+	}
+
 	$sql = "SELECT * FROM `users` WHERE `telephone` = '".$tel."'";
 	$result = $conn->query($sql);
 

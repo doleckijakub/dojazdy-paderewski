@@ -1,7 +1,8 @@
 const q = e => document.querySelector(e);
 
-const usernameRegex = /^[a-zA-Z ąćęółńżźśĄĆĘÓŁŃŻŹŚ]{5,49}[a-zA-ZąćęółńżźśĄĆĘÓŁŃŻŹŚ]*$/;
+const usernameRegex = /^[a-zA-Z ąćęółńżźśĄĆĘÓŁŃŻŹŚ]{3,20}[a-zA-ZąćęółńżźśĄĆĘÓŁŃŻŹŚ]*$/;
 const phoneRegex = /(\+\d{10,12}|\d{9})/;
+const numberRegex = /^[0-9]+$/;
 
 let wasChecked1 = false, wasChecked2 = false;
 
@@ -19,15 +20,28 @@ q('#signup-form').onsubmit = e => {
 function validate_signup(e) {
 	let canUpload = true;
 
-	canUpload &= (q('#signup-username').value.length != 0);
+	canUpload &= (q('#signup-first-name').value.length != 0);
+	canUpload &= (q('#signup-last-name').value.length != 0);
 	canUpload &= (q('#signup-telephone').value.length != 0);
 	canUpload &= (q('#signup-pass-1').value.length != 0);
 	canUpload &= (q('#signup-pass-2').value.length != 0);
+	canUpload &= (q('#signup-id-card-nr').value.length != 0);
 	canUpload &= (q('#signup-eula').checked);
 	canUpload &= (q('#signup-is-parent').checked);
 
 	{
-		const t = q('#signup-username');
+		const t = q('#signup-first-name');
+		const err = t.parentElement.querySelector('.err');
+		if(usernameRegex.test(t.value) || t.value.length == 0) {
+			err.hidden = true;
+		} else {
+			err.hidden = false;
+			canUpload = false;
+		}
+	}
+
+	{
+		const t = q('#signup-last-name');
 		const err = t.parentElement.querySelector('.err');
 		if(usernameRegex.test(t.value) || t.value.length == 0) {
 			err.hidden = true;
@@ -41,6 +55,17 @@ function validate_signup(e) {
 		const t = q('#signup-telephone');
 		const err = t.parentElement.querySelector('.err');
 		if(phoneRegex.test(t.value) || t.value.length == 0) {
+			err.hidden = true;
+		} else {
+			err.hidden = false;
+			canUpload = false;
+		}
+	}
+
+	{
+		const t = q('#signup-id-card-nr');
+		const err = t.parentElement.querySelector('.err');
+		if(numberRegex.test(t.value) || t.value.length == 0) {
 			err.hidden = true;
 		} else {
 			err.hidden = false;

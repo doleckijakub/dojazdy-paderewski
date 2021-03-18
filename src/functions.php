@@ -1,7 +1,7 @@
 <?php
 
 function hash_function($e) {
-	return md5($e);
+	return hash("sha512", $e);
 }
 
 function lang() {
@@ -11,7 +11,7 @@ function lang() {
 }
 
 function goto_index() {
-	header('Location: /pp/'.lang());
+	header('Location: /'.lang());
 }
 
 function res_err($err, $last_act) {
@@ -19,12 +19,13 @@ function res_err($err, $last_act) {
 	echo $err;
 
 	if($err) {
-		$h = 'Location: /pp/'.lang().'/?last_act='.$last_act.'&err='.$err;
-		if(isset($_POST['username'])) { $h .= '&username='.$_POST['username']; }
+		$h = 'Location: /'.lang().'/?last_act='.$last_act.'&err='.$err;
+		if(isset($_POST['first-name'])) { $h .= '&first-name='.$_POST['first-name']; }
+		if(isset($_POST['last-name'])) { $h .= '&last-name='.$_POST['last-name']; }
 		if(isset($_POST['telephone'])) { $h .= '&tel='.$_POST['telephone']; }
 		header($h);
 	} else {
-		header('Location: /pp/'.lang().'/?last_act='.$last_act);
+		header('Location: /'.lang().'/?last_act='.$last_act);
 	}
 
 	exit();
@@ -35,10 +36,10 @@ function res_success($success) {
 	echo $success;
 
 	if($success) {
-		$h = 'Location: /pp/'.lang().'/?success='.$success;
+		$h = 'Location: /'.lang().'/?success='.$success;
 		header($h);
 	} else {
-		header('Location: /pp/'.lang().'/');
+		header('Location: /'.lang().'/');
 	}
 
 	exit();

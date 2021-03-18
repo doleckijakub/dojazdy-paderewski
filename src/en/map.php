@@ -28,6 +28,9 @@
 		.gm-svpc .gmnoprint {
 			display: none;
 		}
+
+
+		/*.gm-ui-hover-effect {display: none;}*/
 	</style>
 </head>
 <body>

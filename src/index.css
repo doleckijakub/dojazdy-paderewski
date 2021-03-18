@@ -116,3 +116,7 @@ label > small {
 	}
 
 }
+
+data {
+	display: none;
+}

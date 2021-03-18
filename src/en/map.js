@@ -2,37 +2,6 @@ const paderewski = latLong(51.2693461, 22.5547316);
 
 let map;
 
-let routes = [
-	{
-		username : 'Dziadek Olesiaka',
-		telephone : '123',
-		start : '51.2906902,22.5283778',
-		point_2 : 'lublin, bohaterów września',
-		point_3 : 'lublin, miejski żłobek nr 9',
-		point_4 : '51.2739464,22.5560556',
-	},
-	{
-		username : 'Jes',
-		telephone : '1234',
-		start : 'Lublin, Araszkiewicza 50',
-		point_2 : 'Lublin, rondo krwiodawców',
-		point_3 : 'lublin, plac litewski',
-		point_4 : 'lublin, witolda chodźki',
-	},
-	{
-		username : 'Tata Kacpra',
-		telephone : '420',
-		start : 'jastków 78l',
-		point_2 : 'lublin, warszawska',
-	},
-	{
-		username : 'Maks',
-		telephone : '112',
-		start : 'zemborzyce dolne 82',
-		// point_2 : 'lublin, warszawska',
-	},
-];
-
 let polylineOptions = {
 	strokeOpacity: .8,
 	strokeWeight: 6,
@@ -45,6 +14,8 @@ function latLong(lat, lng) {
 }
 
 function initMap() {
+
+	// routes = JSON.parse(document.querySelector('data#routes').innerHTML);
 
 	map = new google.maps.Map(document.getElementById("map"), {
 		center: paderewski,
@@ -60,13 +31,25 @@ function initMap() {
 	paderewski_info.setPosition(paderewski);
 	paderewski_info.open(map);
 
-	let directionsService = new google.maps.DirectionsService;
+	fetch('../routes.php')
+	.then(q => q.json())
+	.then(routes => {
 
-	for(route of routes) {
-		let directionsDisplay = new google.maps.DirectionsRenderer;
-		directionsDisplay.setMap(map);
-		calculateAndDisplayRoute(directionsService, directionsDisplay, route);
-	}
+		// alert(JSON.stringify(routes))
+
+		let directionsService = new google.maps.DirectionsService;
+
+		for(i in routes) {
+			let route = routes[i];
+			// alert(JSON.stringify(route))
+			let directionsDisplay = new google.maps.DirectionsRenderer;
+			directionsDisplay.setMap(map);
+			calculateAndDisplayRoute(directionsService, directionsDisplay, route);
+		}
+
+		setTimeout(map.setCenter(paderewski), 1000);
+
+	});
 
 	map.setCenter(paderewski);
 	map.setZoom(12);
@@ -88,8 +71,9 @@ function calculateAndDisplayRoute(directionsService, directionsDisplay, { start,
 		// console.log({ status, res });
 		if(status === 'OK') {
 			renderPolylines(res, { username, telephone });
-		} else
-			alert('no');
+		} else {
+			// alert('no');
+		}
 	})
 }
 
@@ -110,8 +94,38 @@ function renderPolylines(res, { username, telephone }) {
 	let clr = hslToHex(Math.floor(Math.random() * 240) + 120, 100, 50);
 	polylineOptions.strokeColor = '#' + clr;
 
-	infowindow.setContent('<img style="width: 50px; height: 50px; clip-path: circle(50% at center);" src="https://eu.ui-avatars.com/api/?&name=' + username + '&size=64&rounded=true&background=' + clr + '&color=fff&bold=true">' + username + '<br>tel. nr. ' + telephone);
-	// infowindow.setContent('<iframe src="https://en.wikipedia.org/wiki/Special:Random">')
+	let profile_img_src = 'https://eu.ui-avatars.com/api/?&name=' + username + '&size=64&rounded=true&background=' + clr + '&color=fff&bold=true';
+
+	infowindow.setContent(`
+
+		<style>
+
+		.profile-img {
+			width: 50px;
+			height: 50px;
+			clip-path: circle(50% at center);
+		}
+
+		</style>
+
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+		<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+		<div class="col-sm-6">
+			<div class="media">
+				<div class="media-left">
+					<img class="media-object profile-img" src="` + profile_img_src + `">
+				</div>
+				<div class="media-body">
+					<b>` + username + `</b>
+					<span>Call: <a href="tel:` + telephone + `" target="_blank">` + telephone + `</a></span>
+				</div>
+			</div>
+		</div>
+
+	`);
+
 	infowindow.setPosition(res.routes[0].legs[0].steps[0].path[0]);
 	infowindow.open(map);
 
